@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Future Me — AI Time Capsule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <button class="brand" data-go="hero">◈ Future Me</button>
+    <nav>
+      <button data-go="create">Create</button>
+      <button data-go="snapshot">Snapshot</button>
+      <button data-go="talk">Past Self</button>
+      <button data-go="checkin">Then vs Now</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="view active">
+      <div class="vault">
+        <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+        <div class="vault-core">◈</div>
+      </div>
+      <h1>Capture who you are today.<br /><span class="grad">Meet yourself tomorrow.</span></h1>
+      <p class="muted lead">A voice-first time capsule. Record who you are now, seal it, and talk to your past self when it unlocks.</p>
+      <button class="cta pulse" data-go="create">Create My Time Capsule</button>
+    </section>
+
+    <!-- CREATE -->
+    <section id="create" class="view">
+      <h2>Create Your Capsule</h2>
+      <p class="muted" id="stepLabel"></p>
+
+      <div class="step glass" data-step="0">
+        <h3>Who are you?</h3>
+        <label>Name<input id="f-name" placeholder="Your name" /></label>
+        <label class="upload">
+          <input type="file" id="f-photo" accept="image/*" hidden />
+          <img id="photoPreview" alt="" hidden />
+          <span id="photoHint">＋ Add a selfie / photo</span>
+        </label>
+      </div>
+
+      <div class="step glass" data-step="1">
+        <h3>Say it out loud</h3>
+        <p class="muted">Tell your future self about today. We'll transcribe as you speak.</p>
+        <div class="mic-wrap">
+          <span class="pring"></span><span class="pring d2"></span>
+          <button id="micBtn" class="mic" aria-label="Record">🎙</button>
+        </div>
+        <canvas id="wave" height="80"></canvas>
+        <audio id="playback" controls hidden></audio>
+        <label>Transcript<textarea id="f-transcript" rows="4" placeholder="Your words appear here (editable)…"></textarea></label>
+      </div>
+
+      <div class="step glass" data-step="2">
+        <h3>Your life right now</h3>
+        <label>Work<input id="f-work" placeholder="What do you do?" /></label>
+        <label>Goals<textarea id="f-goals" rows="2" placeholder="What do you want to achieve?"></textarea></label>
+        <label>Worries<textarea id="f-worries" rows="2" placeholder="What keeps you up at night?"></textarea></label>
+        <label>Core values<input id="f-values" placeholder="e.g. family, honesty, growth" /></label>
+      </div>
+
+      <div class="step glass" data-step="3">
+        <h3>Dear Future Me…</h3>
+        <textarea id="f-letter" rows="7" placeholder="Dear Future Me,"></textarea>
+        <label>Who I want to become<input id="f-become" placeholder="The person you're growing into" /></label>
+      </div>
+
+      <div class="progress glass">
+        <button class="ghost" id="prevBtn">← Back</button>
+        <div class="bar"><div id="barFill"></div></div>
+        <button class="cta sm" id="nextBtn">Next →</button>
+      </div>
+    </section>
+
+    <!-- SNAPSHOT -->
+    <section id="snapshot" class="view">
+      <h2>Identity Snapshot</h2>
+      <div class="snap-head">
+        <img id="snapPhoto" alt="" hidden />
+        <div><h3 id="snapName"></h3><p class="muted" id="snapDate"></p></div>
+      </div>
+      <div class="grid4">
+        <div class="glass card"><h4>Who I am right now</h4><p id="s-now"></p></div>
+        <div class="glass card"><h4>My goals</h4><p id="s-goals"></p></div>
+        <div class="glass card"><h4>My worries</h4><p id="s-worries"></p></div>
+        <div class="glass card"><h4>Who I want to become</h4><p id="s-become"></p></div>
+      </div>
+      <div class="glass seal-box">
+        <h3>Seal your capsule</h3>
+        <div class="chips" id="durations">
+          <button class="chip on" data-days="30">30 days</button>
+          <button class="chip" data-days="182">6 months</button>
+          <button class="chip" data-days="365">1 year</button>
+        </div>
+        <label class="toggle"><input type="checkbox" id="demoMode" checked /><span></span> Demo Mode — Instant Unlock</label>
+        <button class="cta pulse" id="sealBtn">🔒 Seal Capsule</button>
+      </div>
+    </section>
+
+    <!-- SEAL ANIMATION -->
+    <section id="sealing" class="view">
+      <div class="vault big" id="sealVault">
+        <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+        <div class="vault-core" id="lockIcon">🔓</div>
+      </div>
+      <h2 id="sealTitle">Sealing…</h2>
+      <p class="muted" id="sealDate"></p>
+      <button class="cta" id="openBtn" hidden>Open Capsule → Talk to Past Self</button>
+    </section>
+
+    <!-- TALK -->
+    <section id="talk" class="view">
+      <h2>Talk to Your Past Self</h2>
+      <div class="orb-wrap"><div class="orb" id="orb"></div></div>
+      <div class="chat glass" id="chat"></div>
+      <div class="chips" id="presets">
+        <button class="chip">What was I worried about?</button>
+        <button class="chip">What did I hope would change?</button>
+        <button class="chip">What mattered most to me?</button>
+      </div>
+      <div class="ask">
+        <button class="mic sm" id="askMic" aria-label="Ask by voice">🎙</button>
+        <input id="askInput" placeholder="Ask your past self…" />
+        <button class="cta sm" id="askBtn">Ask</button>
+      </div>
+      <button class="ghost wide" data-go="checkin">Milestone check-in →</button>
+    </section>
+
+    <!-- CHECK-IN / THEN VS NOW -->
+    <section id="checkin" class="view">
+      <div class="glass banner"><h2>Look How Far You've Come</h2><p id="narrative" class="muted">Tell us what happened and we'll show your progression.</p></div>
+      <div class="glass">
+        <h3>So… what happened?</h3>
+        <textarea id="happened" rows="4" placeholder="e.g. I started a new job, finished 2 projects, moved to Brooklyn and stopped worrying about money so much."></textarea>
+        <button class="cta sm" id="extractBtn">Extract milestones</button>
+        <ul class="milestones" id="milestones"></ul>
+      </div>
+      <div class="split">
+        <div class="glass card then"><h4>THEN</h4><dl id="thenList"></dl></div>
+        <div class="glass card now"><h4>NOW</h4><dl id="nowList"></dl></div>
+      </div>
+      <div class="loop glass">
+        <span>You're not finished becoming.</span>
+        <button class="cta sm" id="againBtn">Create Another Time Capsule →</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
