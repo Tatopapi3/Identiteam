@@ -6,8 +6,7 @@
   ],
   "functions": {
     "api/index.ts": {
-      "maxDuration": 60,
-      "includeFiles": "{comfy/**,public/audio/**}"
+      "maxDuration": 60
     }
   }
 }
