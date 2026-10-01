@@ -1,4 +1,4 @@
-import type { CapsuleAnswers, IdentitySnapshot } from "../src/state/capsule";
+import type { CapsuleAnswers, IdentitySnapshot } from "../src/state/capsule.js";
 
 const GROUNDING_RULES = `Ground rules, non-negotiable:
 - Only use information explicitly given below. Never invent facts, events, achievements, or details that were not provided.

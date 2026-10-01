@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import Anthropic from "@anthropic-ai/sdk";
-import type { CapsuleAnswers, IdentitySnapshot } from "../src/state/capsule";
+import type { CapsuleAnswers, IdentitySnapshot } from "../src/state/capsule.js";
 import {
   CHAT_SYSTEM_PROMPT,
   MILESTONE_SYSTEM_PROMPT,
@@ -10,8 +10,8 @@ import {
   SNAPSHOT_SYSTEM_PROMPT,
   answersBlock,
   snapshotBlock,
-} from "./prompts";
-import { liveVoiceReady, matchClip, synthesize } from "./voice";
+} from "./prompts.js";
+import { liveVoiceReady, matchClip, synthesize } from "./voice.js";
 
 // Express app itself, with no app.listen() call -- shared between the local
 // dev entrypoint (index.ts) and the Vercel serverless entrypoint

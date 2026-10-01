@@ -3,7 +3,7 @@
 // entrypoint at ../api/index.ts — this file just adds the app.listen()
 // that a Vercel deployment doesn't need (Vercel invokes the app directly
 // per-request instead of a long-running server).
-import app from "./app";
+import app from "./app.js";
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8787;
 

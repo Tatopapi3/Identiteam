@@ -3,4 +3,4 @@
 // directly, so no adapter is needed. vercel.json rewrites every /api/*
 // request to this one function; the app's own routes (defined in
 // ../server/app.ts) still match on the full original path.
-export { default } from "../server/app";
+export { default } from "../server/app.js";
