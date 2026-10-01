@@ -57,16 +57,20 @@ export function TalkToPastSelf() {
         question,
         history: messages.map(({ role, text }) => ({ role, text })),
       });
+      const replyIndex = nextHistory.length;
       setMessages((prev) => {
         const updated: Message[] = [...prev, { role: "assistant", text: reply, audio: clip }];
         if (ttsSupported) {
-          setSpeakingIndex(updated.length - 1);
+          setSpeakingIndex(replyIndex);
         }
         return updated;
       });
       // Cloned voice: clip or live Comfy TTS; remember the audio so Replay is instant.
+      // Matched by index, not text -- two replies could otherwise happen to
+      // read identically (a repeated canned clip, a short model reply) and
+      // updating by text match would overwrite both.
       void speak(reply, { clip }).then((audio) => {
-        if (audio) setMessages((prev) => prev.map((m) => (m.role === "assistant" && m.text === reply ? { ...m, audio } : m)));
+        if (audio) setMessages((prev) => prev.map((m, i) => (i === replyIndex ? { ...m, audio } : m)));
       });
     } catch {
       setMessages((prev) => [

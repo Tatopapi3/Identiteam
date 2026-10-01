@@ -51,8 +51,13 @@ async function complete(system: string, user: string, maxTokens = 600): Promise<
     system,
     messages: [{ role: "user", content: user }],
   });
-  const block = message.content[0];
-  if (block.type !== "text") throw new Error("Unexpected response shape from the model.");
+  // Claude Sonnet 5 can engage extended thinking on its own for more
+  // complex prompts (ours, when asked to follow a lot of grounding rules
+  // and produce strict JSON) -- when it does, content[0] is a "thinking"
+  // block and the real answer is content[1] instead. Scanning for the
+  // first text block handles both cases instead of assuming position 0.
+  const block = message.content.find((b) => b.type === "text");
+  if (!block) throw new Error("Unexpected response shape from the model.");
   return block.text;
 }
 
@@ -62,7 +67,7 @@ app.post("/api/snapshot", async (req, res) => {
     const text = await complete(
       SNAPSHOT_SYSTEM_PROMPT,
       `Here is what this person shared:\n\n${answersBlock(answers)}`,
-      700,
+      1200,
     );
     const snapshot = extractJson<IdentitySnapshot>(text);
     res.json({ snapshot });
@@ -157,7 +162,7 @@ ${answersBlock(answers)}
 Now (milestones since the capsule opened):
 ${milestones.length ? milestones.map((m) => `- ${m}`).join("\n") : "(none recorded)"}`;
 
-    const reflection = await complete(REFLECTION_SYSTEM_PROMPT, userMessage, 300);
+    const reflection = await complete(REFLECTION_SYSTEM_PROMPT, userMessage, 600);
     res.json({ reflection: reflection.trim() });
   } catch (error: any) {
     console.error("[/api/reflect]", error.message);
