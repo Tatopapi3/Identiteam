@@ -11,6 +11,7 @@ import {
   answersBlock,
   snapshotBlock,
 } from "./prompts";
+import { liveVoiceReady, matchClip, synthesize } from "./voice";
 
 // Express app itself, with no app.listen() call -- shared between the local
 // dev entrypoint (index.ts) and the Vercel serverless entrypoint
@@ -80,6 +81,10 @@ app.post("/api/chat", async (req, res) => {
       history: { role: "user" | "assistant"; text: string }[];
     };
 
+    // Demo: questions that match a pre-recorded cloned-voice clip answer instantly with it.
+    const clip = matchClip(question);
+    if (clip) return res.json({ reply: clip.text, clip: clip.clip });
+
     const historyText = history
       .map((h) => `${h.role === "user" ? "Future self asks" : "Past self answered"}: ${h.text}`)
       .join("\n");
@@ -100,6 +105,23 @@ Reply as their past self, in character, grounded only in the archive above.`;
   } catch (error: any) {
     console.error("[/api/chat]", error.message);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Live cloned voice (Comfy Cloud Chatterbox). Returns audio/mpeg, or 503 so the client falls back to browser TTS.
+app.get("/api/voice", (_req, res) => {
+  res.json({ liveVoice: liveVoiceReady(), clips: process.env.VOICE_CLIPS === "on" });
+});
+
+app.post("/api/tts", async (req, res) => {
+  const { text } = req.body as { text: string };
+  if (!liveVoiceReady() || !text?.trim()) return res.status(503).json({ error: "live voice not configured" });
+  try {
+    const mp3 = await synthesize(text);
+    res.set("Content-Type", "audio/mpeg").send(mp3);
+  } catch (error: any) {
+    console.error("[/api/tts]", error.message);
+    res.status(503).json({ error: error.message });
   }
 });
 
