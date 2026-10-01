@@ -23,7 +23,7 @@ export function askPastSelf(params: {
   question: string;
   history: { role: "user" | "assistant"; text: string }[];
 }) {
-  return post<{ reply: string }>("/chat", params);
+  return post<{ reply: string; clip?: string }>("/chat", params);
 }
 
 export function extractMilestones(freeformText: string) {

@@ -9,7 +9,7 @@ import { PageShell } from "../ui/PageShell";
 import { Waveform } from "../ui/Waveform";
 import { ArrowRightIcon, PauseIcon, PlayIcon } from "../ui/icons";
 
-type Message = { role: "user" | "assistant"; text: string };
+type Message = { role: "user" | "assistant"; text: string; audio?: string };
 
 const SUGGESTED = [
   "What was I worried about?",
@@ -51,20 +51,23 @@ export function TalkToPastSelf() {
     setTextInput("");
     setPending(true);
     try {
-      const { reply } = await askPastSelf({
+      const { reply, clip } = await askPastSelf({
         answers: activeCapsule!.answers,
         snapshot: activeCapsule!.snapshot,
         question,
-        history: messages,
+        history: messages.map(({ role, text }) => ({ role, text })),
       });
       setMessages((prev) => {
-        const updated: Message[] = [...prev, { role: "assistant", text: reply }];
+        const updated: Message[] = [...prev, { role: "assistant", text: reply, audio: clip }];
         if (ttsSupported) {
           setSpeakingIndex(updated.length - 1);
         }
         return updated;
       });
-      if (ttsSupported) speak(reply);
+      // Cloned voice: clip or live Comfy TTS; remember the audio so Replay is instant.
+      void speak(reply, { clip }).then((audio) => {
+        if (audio) setMessages((prev) => prev.map((m) => (m.role === "assistant" && m.text === reply ? { ...m, audio } : m)));
+      });
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -86,13 +89,13 @@ export function TalkToPastSelf() {
     }
   }
 
-  function handleReplay(index: number, text: string) {
+  function handleReplay(index: number, text: string, audio?: string) {
     if (isSpeaking && speakingIndex === index) {
       stopSpeaking();
       setSpeakingIndex(null);
     } else {
       setSpeakingIndex(index);
-      speak(text);
+      void speak(text, { clip: audio });
     }
   }
 
@@ -143,7 +146,7 @@ export function TalkToPastSelf() {
                     </span>
                     {ttsSupported && (
                       <button
-                        onClick={() => handleReplay(i, m.text)}
+                        onClick={() => handleReplay(i, m.text, m.audio)}
                         className="text-gold-dim hover:text-gold-bright"
                         aria-label="Replay"
                       >

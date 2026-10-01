@@ -46,7 +46,10 @@ export function useTextToSpeech() {
     };
   }, [supported]);
 
-  const speak = useCallback(
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const requestRef = useRef(0);
+
+  const speakBrowser = useCallback(
     (text: string, opts?: { rate?: number; pitch?: number }) => {
       if (!supported || !text.trim()) return;
       window.speechSynthesis.cancel();
@@ -63,9 +66,60 @@ export function useTextToSpeech() {
     [supported],
   );
 
+  const playUrl = useCallback((url: string) => {
+    audioRef.current?.pause();
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    audio.onended = () => setIsSpeaking(false);
+    audio.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    return audio.play();
+  }, []);
+
+  /**
+   * Speak in the past self's cloned voice when possible:
+   * a pre-recorded clip if given, else live Comfy Cloud TTS (/api/tts),
+   * else the browser voice. Returns a URL to reuse for replay, if any.
+   */
+  const speak = useCallback(
+    async (text: string, opts?: { clip?: string; rate?: number; pitch?: number }): Promise<string | undefined> => {
+      if (!text.trim()) return;
+      const id = ++requestRef.current;
+      window.speechSynthesis?.cancel();
+      audioRef.current?.pause();
+      if (opts?.clip) {
+        try {
+          await playUrl(opts.clip);
+          return opts.clip;
+        } catch {
+          /* fall through */
+        }
+      }
+      setIsSpeaking(true);
+      try {
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        if (!res.ok) throw new Error("no live voice");
+        const url = URL.createObjectURL(await res.blob());
+        if (id !== requestRef.current) return url; // a newer request took over
+        await playUrl(url);
+        return url;
+      } catch {
+        if (id !== requestRef.current) return;
+        setIsSpeaking(false);
+        speakBrowser(text, opts);
+      }
+    },
+    [playUrl, speakBrowser],
+  );
+
   const stop = useCallback(() => {
-    if (!supported) return;
-    window.speechSynthesis.cancel();
+    requestRef.current++;
+    audioRef.current?.pause();
+    if (supported) window.speechSynthesis.cancel();
     setIsSpeaking(false);
   }, [supported]);
 
