@@ -13,10 +13,10 @@ const CLIP_DIR = path.join(ROOT, "public", "audio");
 
 // Pre-generated clips: text must match exactly what the mp3 says.
 const CLIPS: { id: string; match: RegExp; text: string }[] = [
-  { id: "worried", match: /worr|fear|afraid|scared|anxious/i, text: "You were worried about the interview process. It takes time, there are technical rounds, and you wanted to find people who were truly in alignment with you." },
-  { id: "matters", match: /matter|important|care about|value/i, text: "Getting proficient. Understanding AI, the concepts, the data structures, and just vibe coding with AI every day." },
-  { id: "hope", match: /hope|different|change/i, text: "You hoped that a year from now you'd be at an AI engineering job you really love. You wanted your own AI business. And you wanted to just enjoy your life." },
-  { id: "working", match: /accomplish|working toward|goal|want to (do|be|achieve)/i, text: "You were working toward becoming an AI builder. You said you wanted to be AI native, so one day you could become an AI engineer." },
+  { id: "worried", match: /^\s*what\b.*(worr|fear|afraid|scared|anxious)/i, text: "You were worried about the interview process. It takes time, there are technical rounds, and you wanted to find people who were truly in alignment with you." },
+  { id: "matters", match: /^\s*what\b.*(matter|important|care about|value)/i, text: "Getting proficient. Understanding AI, the concepts, the data structures, and just vibe coding with AI every day." },
+  { id: "hope", match: /^\s*what\b.*(hope|different|change)/i, text: "You hoped that a year from now you'd be at an AI engineering job you really love. You wanted your own AI business. And you wanted to just enjoy your life." },
+  { id: "working", match: /^\s*what\b.*(accomplish|working toward|goals?\b|want(ed)? to (do|be|achieve))/i, text: "You were working toward becoming an AI builder. You said you wanted to be AI native, so one day you could become an AI engineer." },
   { id: "closing", match: /dear future|letter|message|tell myself/i, text: "Dear Future Me. You got this. You're the best. You can do it. Just keep going, and know that people are there to support you, and the world supports you. Love you." },
 ];
 

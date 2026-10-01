@@ -40,7 +40,10 @@ function extractJson<T>(text: string): T {
     .replace(/^```(?:json)?/i, "")
     .replace(/```$/, "")
     .trim();
-  return JSON.parse(cleaned) as T;
+  // Tolerate any prose around the JSON object.
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  return JSON.parse(start >= 0 && end > start ? cleaned.slice(start, end + 1) : cleaned) as T;
 }
 
 async function complete(system: string, user: string, maxTokens = 600): Promise<string> {
@@ -51,9 +54,13 @@ async function complete(system: string, user: string, maxTokens = 600): Promise<
     system,
     messages: [{ role: "user", content: user }],
   });
-  const block = message.content[0];
-  if (block.type !== "text") throw new Error("Unexpected response shape from the model.");
-  return block.text;
+  // The model may return non-text blocks (e.g. thinking) before the answer, so take the text blocks.
+  const text = message.content
+    .filter((b): b is Anthropic.TextBlock => b.type === "text")
+    .map((b) => b.text)
+    .join("");
+  if (!text) throw new Error("Unexpected response shape from the model.");
+  return text;
 }
 
 app.post("/api/snapshot", async (req, res) => {
