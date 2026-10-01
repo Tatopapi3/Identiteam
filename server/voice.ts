@@ -4,9 +4,18 @@
 // Needs COMFY_CLOUD_API_KEY, comfy/chatterbox_api.json (Export Workflow (API)) and comfy/voice-sample.wav.
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const BASE = "https://cloud.comfy.org";
-const ROOT = process.cwd();
+// Resolved relative to this file (via import.meta.url), not process.cwd().
+// Vercel's build-time file tracer (@vercel/nft) can statically follow a
+// __dirname-style relative path and will bundle whatever it points to --
+// it can't do that for a path built from process.cwd(), which is only
+// known at runtime. That gap is exactly what left these files missing
+// from the deployed function before, with liveVoiceReady()/matchClip()
+// silently (and correctly) reporting false rather than crashing.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(HERE, "..");
 const WORKFLOW = path.join(ROOT, "comfy", "chatterbox_api.json");
 const VOICE = path.join(ROOT, "comfy", "voice-sample.wav");
 const CLIP_DIR = path.join(ROOT, "public", "audio");
