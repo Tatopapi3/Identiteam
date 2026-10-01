@@ -7,9 +7,7 @@ const GROUNDING_RULES = `Ground rules, non-negotiable:
 
 export function answersBlock(answers: CapsuleAnswers) {
   return `Name: ${answers.name || "(not given)"}
-Voice message to future self: ${answers.voiceMessage || "(not given)"}
-Working toward: ${answers.workingToward || "(not given)"}
-Current goals: ${answers.currentGoals || "(not given)"}
+Working toward / current goals: ${answers.currentGoals || "(not given)"}
 Worries: ${answers.worries || "(not given)"}
 What matters most right now: ${answers.whatMatters || "(not given)"}
 Hopes for what will be different: ${answers.hopesForChange || "(not given)"}

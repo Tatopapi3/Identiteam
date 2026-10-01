@@ -1,8 +1,6 @@
 export type CapsuleAnswers = {
   name: string;
   photoDataUrl?: string;
-  voiceMessage: string;
-  workingToward: string;
   currentGoals: string;
   worries: string;
   whatMatters: string;
@@ -52,8 +50,6 @@ export const SEAL_DURATIONS: { label: string; days: number }[] = [
 export const EMPTY_ANSWERS: CapsuleAnswers = {
   name: "",
   photoDataUrl: undefined,
-  voiceMessage: "",
-  workingToward: "",
   currentGoals: "",
   worries: "",
   whatMatters: "",

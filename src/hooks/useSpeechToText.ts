@@ -28,6 +28,14 @@ export type UseSpeechToTextOptions = {
  * This is the MVP's speech-to-text path — no server round trip, works
  * offline-ish, and degrades to a visible "not supported, type instead"
  * state in browsers without it (notably Firefox/Safari as of this build).
+ *
+ * Whatever is still "interim" (not yet finalized by the engine) at the
+ * moment recording stops — by the user clicking stop, or the browser
+ * ending the session on its own after a pause — is promoted into the
+ * final transcript rather than discarded. Without this, the last few
+ * words of an answer could be silently dropped: captured in the UI while
+ * listening, then gone the moment the mic turns off, so the capsule
+ * would later "remember" less than the person actually said.
  */
 export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   const [supported] = useState(() => getRecognitionCtor() !== null);
@@ -36,8 +44,18 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   const [interim, setInterim] = useState("");
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const finalRef = useRef("");
+  const interimRef = useRef("");
   const onFinalChunkRef = useRef(options.onFinalChunk);
   onFinalChunkRef.current = options.onFinalChunk;
+
+  const commitInterim = useCallback(() => {
+    if (!interimRef.current) return;
+    finalRef.current = [finalRef.current, interimRef.current].filter(Boolean).join(" ").trim();
+    onFinalChunkRef.current?.(interimRef.current.trim());
+    interimRef.current = "";
+    setTranscript(finalRef.current);
+    setInterim("");
+  }, []);
 
   useEffect(() => {
     const Ctor = getRecognitionCtor();
@@ -59,24 +77,29 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
           interimText += text;
         }
       }
+      interimRef.current = interimText;
       setTranscript(finalRef.current);
       setInterim(interimText);
     };
 
     recognition.onerror = () => {
+      commitInterim();
       setIsListening(false);
     };
 
     recognition.onend = () => {
+      // The engine can end the session on its own (e.g. after a pause) —
+      // not only when our stop() wrapper calls it — so whatever is still
+      // interim at that point is committed here too, not just in stop().
+      commitInterim();
       setIsListening(false);
-      setInterim("");
     };
 
     recognitionRef.current = recognition;
     return () => {
       recognition.abort();
     };
-  }, []);
+  }, [commitInterim]);
 
   const start = useCallback(() => {
     if (!recognitionRef.current) return;
@@ -90,12 +113,14 @@ export function useSpeechToText(options: UseSpeechToTextOptions = {}) {
   }, [transcript]);
 
   const stop = useCallback(() => {
+    commitInterim();
     recognitionRef.current?.stop();
     setIsListening(false);
-  }, []);
+  }, [commitInterim]);
 
   const reset = useCallback(() => {
     finalRef.current = "";
+    interimRef.current = "";
     setTranscript("");
     setInterim("");
   }, []);

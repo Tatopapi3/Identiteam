@@ -16,19 +16,9 @@ type VoiceQuestion = {
 
 const VOICE_QUESTIONS: VoiceQuestion[] = [
   {
-    key: "voiceMessage",
-    prompt: "Leave a voice message for your future self.",
-    placeholder: "Say whatever feels true right now…",
-  },
-  {
-    key: "workingToward",
+    key: "currentGoals",
     prompt: "What are you working toward right now?",
     placeholder: "A project, a role, a version of yourself…",
-  },
-  {
-    key: "currentGoals",
-    prompt: "What are your current goals?",
-    placeholder: "Be as concrete or as loose as feels right.",
   },
   {
     key: "worries",
@@ -56,12 +46,12 @@ const TOTAL_STEPS = 2 + VOICE_QUESTIONS.length;
 
 function fallbackSnapshot(answers: CapsuleAnswers) {
   return {
-    whoIAmNow: answers.voiceMessage || answers.dearFutureMe || "Someone mid-story, captured here.",
-    goals: answers.currentGoals || answers.workingToward || "—",
+    whoIAmNow: answers.dearFutureMe || "Someone mid-story, captured here.",
+    goals: answers.currentGoals || "—",
     hopes: answers.hopesForChange || "—",
     worries: answers.worries || "—",
     whatMatters: answers.whatMatters || "—",
-    whoIWantToBecome: answers.workingToward || "—",
+    whoIWantToBecome: answers.currentGoals || "—",
   };
 }
 
