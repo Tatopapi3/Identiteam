@@ -2,6 +2,64 @@ import { LockIcon } from "./icons";
 
 type OrbState = "idle" | "sealed" | "opening" | "open";
 
+function VaultRings({ state, size }: { state: OrbState; size: number }) {
+  const sealed = state === "sealed";
+  const sealedClass = sealed ? "is-sealed" : "";
+  const c = size / 2;
+
+  return (
+    <svg
+      className="absolute"
+      style={{
+        width: size,
+        height: size,
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+      viewBox={`0 0 ${size} ${size}`}
+      aria-hidden="true"
+    >
+      {/* SVG circles rather than CSS border-radius rings — a rotating
+          dashed border combined with border-radius can mis-render in some
+          browsers (dash segments escaping the circle's own boundary);
+          an SVG stroke along a true circular path can't do that. */}
+      <circle
+        className={`vault-ring vault-ring--outer ${sealedClass}`}
+        cx={c}
+        cy={c}
+        r={size * 0.59}
+        fill="none"
+        stroke="rgba(91,200,221,0.45)"
+        strokeWidth={1}
+        strokeDasharray="5 9"
+        style={{ transformOrigin: `${c}px ${c}px` }}
+      />
+      <circle
+        className={`vault-ring vault-ring--mid ${sealedClass}`}
+        cx={c}
+        cy={c}
+        r={size * 0.475}
+        fill="none"
+        stroke="rgba(232,182,84,0.55)"
+        strokeWidth={2}
+        strokeDasharray="9 7"
+        style={{ transformOrigin: `${c}px ${c}px` }}
+      />
+      <circle
+        className={`vault-ring vault-ring--inner ${sealedClass}`}
+        cx={c}
+        cy={c}
+        r={size * 0.36}
+        fill="none"
+        stroke="rgba(246,212,136,0.35)"
+        strokeWidth={1}
+        style={{ transformOrigin: `${c}px ${c}px` }}
+      />
+    </svg>
+  );
+}
+
 export function CapsuleOrb({
   state = "idle",
   size = 220,
@@ -16,6 +74,8 @@ export function CapsuleOrb({
       className="relative mx-auto flex items-center justify-center"
       style={{ width: size, height: size * 1.25 }}
     >
+      <VaultRings state={state} size={size} />
+
       <div
         className={`glow-breathe absolute inset-0 rounded-full blur-3xl transition-opacity duration-700`}
         style={{

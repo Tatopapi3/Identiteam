@@ -11,6 +11,12 @@
   --color-gold-bright: #f6d488;
   --color-gold-dim: #a6874f;
 
+  /* a second accent, borrowed from Bo's design exploration (design branch)
+     for the particle field + vault rings + gradient headline treatment —
+     used sparingly, never as a competing primary accent */
+  --color-cyan: #5bc8dd;
+  --color-cyan-dim: #3a8a9c;
+
   --color-ink: #f0ede4;
   --color-muted: #8d93ac;
   --color-faint: #565d7d;
@@ -67,26 +73,46 @@ body {
 }
 
 /* ---------------------------------------------------------------------
-   starfield backdrop — a few dozen soft points of light, CSS-only
+   gradient headline text — amber -> gold -> cyan, ported from Bo's
+   design-branch exploration (".grad"), used sparingly on the one or two
+   words per screen that should carry the most warmth.
    --------------------------------------------------------------------- */
-.starfield {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+.text-grad {
+  background: linear-gradient(90deg, var(--color-gold-bright), var(--color-gold), var(--color-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------------
+   vault rings — concentric rings around the CapsuleOrb, adapted from
+   Bo's design-branch ".vault"/".ring" treatment. Idle: slow counter-
+   spinning rings. Sealed: rings stop and glow solid instead.
+   --------------------------------------------------------------------- */
+@keyframes vault-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes vault-spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+.vault-ring {
   pointer-events: none;
-  background-image: radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1.5px 1.5px at 25% 65%, rgba(255,255,255,0.35), transparent),
-    radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1.5px 1.5px at 92% 55%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 45% 35%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 70% 92%, rgba(255,255,255,0.35), transparent),
-    radial-gradient(1.5px 1.5px at 15% 88%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 35% 12%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.3), transparent);
-  background-repeat: repeat;
-  background-size: 100% 100%;
-  opacity: 0.8;
+}
+.vault-ring--outer {
+  animation: vault-spin 18s linear infinite;
+}
+.vault-ring--mid {
+  animation: vault-spin-reverse 7s linear infinite;
+}
+.vault-ring--inner {
+  animation: vault-spin 12s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(232, 182, 84, 0.2));
+}
+.vault-ring.is-sealed {
+  animation-play-state: paused;
+  stroke: var(--color-gold) !important;
+  filter: drop-shadow(0 0 14px rgba(232, 182, 84, 0.5));
 }
 
 .midnight-gradient {
@@ -154,4 +180,16 @@ body {
 }
 .drift-up {
   animation: drift-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mic-ring,
+  .glow-breathe,
+  .vault-ring,
+  .waveform > span {
+    animation: none !important;
+  }
+  .drift-up {
+    animation-duration: 0.01ms !important;
+  }
 }

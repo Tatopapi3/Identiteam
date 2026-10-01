@@ -101,7 +101,7 @@ export function TalkToPastSelf() {
       <div className="flex flex-1 flex-col">
         <div className="text-center drift-up">
           <h1 className="font-display text-4xl text-ink">
-            A reflection of <span className="italic text-gold-bright">{activeCapsule.answers.name}</span>
+            A reflection of <span className="italic text-grad">{activeCapsule.answers.name}</span>
           </h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
             Not a real-time consciousness — a voice built only from what was archived in this

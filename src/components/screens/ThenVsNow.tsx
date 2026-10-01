@@ -56,7 +56,7 @@ export function ThenVsNow() {
       <div className="flex flex-1 flex-col items-center">
         <h1 className="font-display text-4xl text-ink text-center drift-up">
           Then <span className="text-faint">vs.</span>{" "}
-          <span className="text-gold-bright italic">Now</span>
+          <span className="text-grad italic">Now</span>
         </h1>
 
         <div className="mt-10 grid w-full gap-6 sm:grid-cols-2">

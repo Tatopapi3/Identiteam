@@ -16,13 +16,17 @@ export function Landing() {
         </div>
 
         <h1 className="mt-10 font-display text-6xl font-medium tracking-tight text-ink drift-up [animation-delay:0.1s]">
-          Future <span className="text-gold-bright italic">Me</span>
+          Future <span className="text-grad italic">Me</span>
         </h1>
         <p className="mt-5 max-w-md text-lg text-muted drift-up [animation-delay:0.2s]">
           Capture who you are today. Meet yourself tomorrow.
         </p>
 
-        <div className="mt-10 drift-up [animation-delay:0.3s]">
+        <p className="mt-6 max-w-sm font-display text-base italic leading-relaxed text-gold-dim drift-up [animation-delay:0.25s]">
+          "This isn't an AI telling you who you are. This is you, meeting yourself across time."
+        </p>
+
+        <div className="mt-8 drift-up [animation-delay:0.3s]">
           <Button size="lg" icon={<ArrowRightIcon />} onClick={startNewCapsule}>
             Create My Time Capsule
           </Button>

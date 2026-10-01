@@ -31,7 +31,7 @@ export function IdentitySnapshot() {
             />
           )}
           <h1 className="font-display text-4xl text-ink">
-            A snapshot of <span className="italic text-gold-bright">{answers.name || "you"}</span>
+            A snapshot of <span className="italic text-grad">{answers.name || "you"}</span>
           </h1>
           <p className="mt-3 max-w-lg text-sm text-muted">
             This is based only on what you just shared — nothing more, nothing assumed.

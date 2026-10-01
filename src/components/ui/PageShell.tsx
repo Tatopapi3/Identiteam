@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ParticleField } from "./ParticleField";
 
 export function PageShell({
   children,
@@ -11,7 +12,7 @@ export function PageShell({
 }) {
   return (
     <div className="relative min-h-screen midnight-gradient text-ink font-body">
-      <div className="starfield" />
+      <ParticleField />
       <div
         className={`relative z-10 mx-auto flex min-h-screen flex-col px-6 py-14 ${
           wide ? "max-w-5xl" : "max-w-2xl"
