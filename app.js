@@ -1,4 +1,4 @@
-// Future Me — AI Time Capsule (vanilla, no build step)
+// Note to Self 3000 — AI Time Capsule (vanilla, no build step)
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 
